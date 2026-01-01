@@ -1,0 +1,24 @@
+name: Amazon Auto Rank Task
+on:
+  schedule:
+    - cron: '0 18 * * *' # 对应美东时间凌晨，每晚运行
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Scraper
+        run: python amazon_scraper.py
+      - name: Save Results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add rankings.csv
+          git commit -m "Update Daily Data"
+          git push
